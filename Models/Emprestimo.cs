@@ -10,7 +10,9 @@ namespace Biblioteca.Models
         public string NomeUsuario { get; set; }
         public string Telefone { get; set; }
         public bool Devolvido { get; set; }
-        
+        public static DateTime Today { get; }
+        DateTime thisDay = DateTime.Today;
+
         public int LivroId { get; set; }
         public Livro Livro { get; set; }
     }

@@ -2,6 +2,11 @@
 @{
     ViewData["Title"] = "Listagem de Empréstimos";
 }
+
+<style>
+#At { background-color: red; }
+</style>
+
 <div class="row">
     <div class="col-md-12">
     <form class="form-inline" method="POST">
@@ -46,8 +51,11 @@
                     <td>@e.DataDevolucao.ToString("dd/MM/yyyy") </td>
                     <td>@e.Livro.Titulo </td>
                     <td>@e.Livro.Autor </td>
+                    @if(@e.DataDevolucao <= DateTime.Today){
+                     <td id="At">ATRASADO</td>}
                     <td><a href="/Emprestimo/Edicao/@e.Id">Editar</a></td>
                 </tr>
+                 
                 }
             </tbody>
         </table>
