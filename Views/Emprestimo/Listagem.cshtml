@@ -1,6 +1,10 @@
 @model List<Emprestimo>
 @{
     ViewData["Title"] = "Listagem de Empréstimos";
+    int FiltroPorPag = Int32.Parse(ViewData["EmpPorPagina"].ToString());
+    int PaginaAtual = Int32.Parse(ViewData["PaginaAtual"].ToString());
+    int NumLivrosPorPag = (Model.Count < FiltroPorPag ? Model.Count : FiltroPorPag);
+    int NumTotalDePag = Model.Count/(NumLivrosPorPag == 0 ? NumLivrosPorPag = 1: NumLivrosPorPag) + (Model.Count % NumLivrosPorPag == 0 ? 0 : 1);
 }
 
 <style>
@@ -16,10 +20,20 @@
                 <option value="Livro">Livro</option>
             </select>
         </div>
+
         <div class="form-group mb-2 mx-sm-3">
             <input type="text" placeholder="Filtro" name="Filtro" class="form-control" />
         </div>
+
         <button type="submit" class="btn btn-primary mb-2">Pesquisar</button>
+
+        <div id="SeletorPaginas">
+                <span>Página:</span>
+                @for (int i = 1; i <= NumTotalDePag; i++)
+                {
+                    <span><a href="/Emprestimo/Listagem?PaginaAtual=@i">@i, </a></span>
+                }
+            </div>
     </form>
     </div>
 </div>
@@ -27,7 +41,7 @@
 <div class="row">
     <div class="col-md-12">
 
-        @if(Model.Count > 0){
+        @if(Model.Count != 0){
         <table class="table table-striped"> 
             <thead>
                 <tr><th>Id</th>
@@ -41,24 +55,30 @@
             </thead>
 
             <tbody>
-                @foreach (Emprestimo e in Model)
+                @for (int i = (PaginaAtual - 1) * NumLivrosPorPag; i < (NumLivrosPorPag * PaginaAtual < Model.Count ?
+                   NumLivrosPorPag * PaginaAtual : Model.Count); i++)
                 {
                 <tr>
-                    <td>@e.Id </td>
-                    
-                    <td>@e.NomeUsuario </td>
-                    <td>@e.DataEmprestimo.ToString("dd/MM/yyyy") </td>
-                    <td>@e.DataDevolucao.ToString("dd/MM/yyyy") </td>
-                    <td>@e.Livro.Titulo </td>
-                    <td>@e.Livro.Autor </td>
-                    @if(@e.DataDevolucao <= DateTime.Today){
+                    <td>@Model[i].Id </td>
+                    <td>@Model[i].NomeUsuario </td>
+                    <td>@Model[i].DataEmprestimo.ToString("dd/MM/yyyy") </td>
+                    <td>@Model[i].DataDevolucao.ToString("dd/MM/yyyy") </td>
+                    <td>@Model[i].Livro.Titulo </td>
+                    <td>@Model[i].Livro.Autor </td>
+                    @if(@Model[i].DataDevolucao <= DateTime.Today){
                      <td id="At">ATRASADO</td>}
-                    <td><a href="/Emprestimo/Edicao/@e.Id">Editar</a></td>
+                    <td><a href="/Emprestimo/Edicao/@Model[i].Id">Editar</a></td>
                 </tr>
                  
                 }
             </tbody>
         </table>
+        <div>
+                <select name="itensPorPagina" id="itensPorPagina">
+                    <option value="10">10 livros</option>
+                    <option value=@Model.Count>Todos</option>
+                </select>
+            </div>
         } else {
                     <p>Nenhum registro encontrado.</p>
                 }
