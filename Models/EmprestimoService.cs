@@ -74,7 +74,8 @@ namespace Biblioteca.Models
                 {
                     ListaConsulta[i].Livro = bc.Livros.Find(ListaConsulta[i].LivroId);
                 }
-                return ListaConsulta;
+
+                return ListaConsulta.OrderBy(e => e.DataDevolucao).ToList();
             }
         }
 
